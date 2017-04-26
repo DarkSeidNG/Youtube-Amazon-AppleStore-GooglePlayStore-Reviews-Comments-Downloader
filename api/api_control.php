@@ -16,12 +16,13 @@ function load_youtube_comments( $_api ) {
 
 	//check if the url returns data - if it doesnt its most probably because the videoID is wrong
 	if ( $json === false ) {
-		$retunData = json_encode(array("msg" => "failed", "rUrl" => ""));
-		header('Content-Type:application/json;charset=utf-8');
+		$retunData = json_encode(array("msg" => "failed", "rurl" => " "));
+		//header('Content-Type:application/json;charset=utf-8');
 		echo $returnData;
 	} else {
-		$filename = "../generated/youtube/"; //the location we want to store our csv file in the server 
-		$csv_filename = $filename . "Youtube_" . date( "Y-m-d_H-i", time() ) . ".csv"; //create a unique filename for each csv
+		$filepath = "../generated/youtube/"; //the location we want to store our csv file in the server 
+		$csv_file = "Youtube_" . date( "Y-m-d_H-i", time() ) . ".csv";//create a unique filename for each csv
+		$csv_filename = $filepath . $csv_file; 
 		$fd = fopen( $csv_filename, "w" );
 		fputcsv( $fd, array( 'UserName', 'Date', 'Star rating', 'Review or Comment', 'Link' ) ); //set the header items before populating the csv
 
@@ -46,9 +47,9 @@ function load_youtube_comments( $_api ) {
 			fclose( $fd );
 		}
 
-		$retunData = json_encode(array("msg" => "success", "rUrl" => $csv_filename));
-		header('Content-Type:application/json;charset=utf-8');
-		echo $returnData;
+		$retunData = json_encode(array("msg" => "success", "rurl" => "/generated/youtube/".$csv_file));
+		//header('Content-Type:application/json;charset=utf-8');
+		echo $retunData;
 	}
 }
 
@@ -71,7 +72,7 @@ function load_more_comments( $dat, $fd, $v_id ) {
 	}
 	//this will ensure that we keep getting more data till there is no more data to be gotten
 	if ( $datat2[ 'nextPageToken' ] != "" ) {
-		load_more_comments( $datat2[ 'nextPageToken' ] );
+		load_more_comments( $datat2[ 'nextPageToken' ], $fd, $v_id );
 	} else {
 		fclose( $fd );
 	}

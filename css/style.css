@@ -57,6 +57,7 @@ img.loader_image{
 	font-weight: bold;
 	font-size: 13px;
 	display: none;
+	cursor: pointer;
 	
 }
 

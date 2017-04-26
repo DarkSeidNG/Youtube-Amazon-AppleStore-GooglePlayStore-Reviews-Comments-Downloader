@@ -1,3 +1,14 @@
+<!--
+
+
+
+
+
+
+
+
+
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -44,28 +55,31 @@
 	</div>
 
 
-	<script src="js/jquery-1.11.1.min.js"></script>
+	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/bootstrap-3.3.7.js"></script>
 
 	<script type="text/javascript">
 		$( '.download_form' ).submit( function () {
 
+			//first check the type of data the user wants to load
 			if ( $( "input[type='radio'][name='content_type']:checked" ).val() == 'youtube' ) {
-				var urlCheck = checkUrl( $( '.url_input' ).val() );
-				if ( urlCheck != "error" ) {
+				var urlCheck = checkYoutubeUrl( $( '.url_input' ).val() );
+				if ( urlCheck != "error" ) //check if the url is a valid youtube url and extrack the video id from the url
+				{
 					getYouTubeComments( urlCheck );
 				} else {
 					alert( 'The url you entered is invalid' );
 				}
-			} else if ( $( "input[type='radio'][name='content_type']:checked" ).val() == 'amazon' ) {
-
+			} else if ( $( "input[type='radio'][name='content_type']:checked" ).val() == 'amazon' ) 
+			{
+				var urlCheck = checkAmazonUrl( $( '.url_input' ).val() );
+				alert(urlCheck);
 			}
 			return false;
 		});
-
-
-
-		function radioListener( _this ) {
+		
+		function radioListener( _this ) //switch the placeholder when the user toggles btw youtube comments and amazon reviews
+		{
 			if ( $( _this ).val() == "youtube" ) {
 				$( '.url_input' ).attr( "placeholder", "Enter Video Url..." );
 			} else if ( $( _this ).val() == "amazon" ) {
@@ -73,12 +87,28 @@
 			}
 		}
 
-		function checkUrl( _url ) {
+		function checkYoutubeUrl( _url ) //checks if the url is valid and returns the video id
+		{
 			var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11,11}).*/;
 			var match = _url.match( regExp );
 			if ( match ) {
 				if ( match.length >= 2 ) {
 					return match[ 2 ];
+				} else {
+					return "error";
+				}
+			} else {
+				return "error";
+			}
+		}
+		
+		function checkAmazonUrl( _url ) //checks if the url is valid and returns the video id
+		{
+			var regExp = /(?:dp|o|gp|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/;
+			var match = _url.match( regExp );
+			if ( match ) {
+				if ( match.length >= 0 ) {
+					return match[ 0 ];
 				} else {
 					return "error";
 				}
@@ -93,27 +123,25 @@
 			$.ajax( {
 				url: './api/api_control.php?action=loadYoutube&vid=' + _vid,
 				async: true,
-				dataType: 'json',
+				cache: false,
 				success: function ( data ) {
-					var jdata = JSON.parse(data);
 					
-					if ( jdata[0].msg == 'success' ) {
-						$( '.loader_image' ).hide();
-						$( '.submit_text' ).html( 'Submit' );
+					var jdata = JSON.parse(data);
+					$( '.loader_image' ).hide();
+					$( '.submit_text' ).html( 'Submit' );
+					
+					if ( jdata.msg == 'success' ) {
 						$( '.msg_text' ).html( "Data retrieved successfully" );
 						$( '.message_alert' ).slideDown();
 						$( '.action_button' ).show();
-						$( '.action_button' ).attr( 'href', jdata[0].data );
-					} else if( jdata[0].msg == 'failed' ) {
-						$( '.loader_image' ).hide();
-						$( '.submit_text' ).html( 'Submit' );
+						$( '.action_button' ).click(function(){window.location =  document.location+jdata.rurl;});
+					} else if( jdata.msg == 'failed' ) {
 						$( '.msg_text' ).html( "Data retrieval failed" );
+						$( '.action_button' ).hide();
 						$( '.message_alert' ).slideDown();
 					}
 				},
 				error: function ( result ) {
-					var edata = JSON.parse(result);
-					alert(edata);
 					$( '.loader_image' ).hide();
 					$( '.submit_text' ).html( 'Submit' );
 					$( '.msg_text' ).html( "An error occured while processing your request please check your connection and try again" );
