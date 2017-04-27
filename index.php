@@ -1,14 +1,4 @@
-<!--
-
-
-
-
-
-
-
-
-
--->
+<?php  ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,6 +18,7 @@
 		<div class="row">
 			<div class="Absolute-Center is-Responsive">
 				<div class="col-sm-12 col-md-10 col-md-offset-1">
+				<h2>Grab Youtube comments and Amazon Reviews with ease</h2>
 					<form id="download_form" class="download_form">
 						<div class="form-group input-group">
 
@@ -66,14 +57,19 @@
 				var urlCheck = checkYoutubeUrl( $( '.url_input' ).val() );
 				if ( urlCheck != "error" ) //check if the url is a valid youtube url and extrack the video id from the url
 				{
-					getYouTubeComments( urlCheck );
+					getDataAsync("loadYoutube",urlCheck );
 				} else {
 					alert( 'The url you entered is invalid' );
 				}
 			} else if ( $( "input[type='radio'][name='content_type']:checked" ).val() == 'amazon' ) 
 			{
 				var urlCheck = checkAmazonUrl( $( '.url_input' ).val() );
-				alert(urlCheck);
+				if ( urlCheck != "error" ) //check if the url is a valid amazon url and extrack the product id from the url
+				{
+					getDataAsync("loadAmazon",urlCheck );
+				} else {
+					alert( 'The url you entered is invalid' );
+				}
 			}
 			return false;
 		});
@@ -107,8 +103,8 @@
 			var regExp = /(?:dp|o|gp|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/;
 			var match = _url.match( regExp );
 			if ( match ) {
-				if ( match.length >= 0 ) {
-					return match[ 0 ];
+				if ( match.length >= 1 ) {
+					return match[ 1 ];
 				} else {
 					return "error";
 				}
@@ -117,12 +113,12 @@
 			}
 		}
 
-		function getYouTubeComments( _vid ) {
+		function getDataAsync( _action,_vid ) {
 			$( '.loader_image' ).show();
 			$( '.submit_text' ).html( 'Fetching.....' );
 			$.ajax( {
-				url: './api/api_control.php?action=loadYoutube&vid=' + _vid,
-				async: true,
+				url: './api/api_control.php?action='+_action+'&vid=' + _vid,
+				async: false,
 				cache: false,
 				success: function ( data ) {
 					
