@@ -1,6 +1,7 @@
 <?php
 error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED );
 include_once "../includes/simple_html_dom.php";
+include_once "../includes/PHPMailerAutoload.php";
 
 if ( isset( $_GET[ 'action' ] ) ) {
 	if ( $_GET[ 'action' ] == "loadYoutube" ) {
