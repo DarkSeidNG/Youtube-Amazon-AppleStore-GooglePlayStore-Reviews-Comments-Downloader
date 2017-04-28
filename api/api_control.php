@@ -1,7 +1,6 @@
 <?php
 error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED );
 include_once "../includes/simple_html_dom.php";
-include_once "../includes/PHPMailerAutoload.php";
 
 if ( isset( $_GET[ 'action' ] ) ) {
 	if ( $_GET[ 'action' ] == "loadYoutube" ) {
@@ -145,6 +144,12 @@ function load_amazon_reviews() {
 				fclose( $fd );
 			}
 
+			//send downloaded file to the user
+			$protocol = $_SERVER['HTTPS'] == '' ? 'http://' : 'https://';
+			$folder = $protocol . $_SERVER['HTTP_HOST'];
+			$file_link_m = $folder."/generated/amazon/" . $csv_file;
+			sendMail($_GET['e'],$file_link_m);
+			
 			$retunData = json_encode( array( "msg" => "success", "rurl" => "/generated/amazon/" . $csv_file ) );
 			//header('Content-Type:application/json;charset=utf-8');
 			echo $retunData;
@@ -224,6 +229,16 @@ function load_more_reviews( $product_id, $fd, $_pageNum ) {
 			echo $retunDatas;
 		}
 
+}
+
+function sendMail($email,$link){
+				$to = $email;
+				$subject = "Your Amazon Reviews Are ready!";
+				$message = "Download reviews <a href='".$link."'>Review link</a>";
+				$headers = "MIME-Version: 1.0" . "\r\n";
+				$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+				$headers .= 'From: <no-reply@iFwAxTeL.com>' . "\r\n";
+				$mail = mail( $to, $subject, $message, $headers );
 }
 
 

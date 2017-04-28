@@ -33,6 +33,10 @@
 							<span class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></span>
 							<input class="form-control url_input" type="text" name='web_url' placeholder="Enter Url..."/>
 						</div>
+						<div class="form-group input-group email_container" style="display: none;">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-cloud-download"></i></span>
+							<input class="form-control email_input" type="text" name='email' placeholder="Email..."/>
+						</div>
 						<div class="form-group">
 							<button type="submit" class="btn btn-def btn-block submit_but"><img class="loader_image" height="17" src="images/icons/Preloader_3.gif"/> <span class="submit_text">Submit</span></button>
 						</div>
@@ -57,7 +61,7 @@
 				var urlCheck = checkYoutubeUrl( $( '.url_input' ).val() );
 				if ( urlCheck != "error" ) //check if the url is a valid youtube url and extrack the video id from the url
 				{
-					getDataAsync("loadYoutube",urlCheck );
+					getDataAsync("loadYoutube",urlCheck,"" );
 				} else {
 					alert( 'The url you entered is invalid' );
 				}
@@ -66,7 +70,8 @@
 				var urlCheck = checkAmazonUrl( $( '.url_input' ).val() );
 				if ( urlCheck != "error" ) //check if the url is a valid amazon url and extrack the product id from the url
 				{
-					getDataAsync("loadAmazon",urlCheck );
+					var _mail = $('.email_input').val();
+					getDataAsync("loadAmazon",urlCheck,_mail );
 				} else {
 					alert( 'The url you entered is invalid' );
 				}
@@ -78,8 +83,10 @@
 		{
 			if ( $( _this ).val() == "youtube" ) {
 				$( '.url_input' ).attr( "placeholder", "Enter Video Url..." );
+				$( '.email_container' ).slideUp();
 			} else if ( $( _this ).val() == "amazon" ) {
 				$( '.url_input' ).attr( "placeholder", "Enter Product Url..." );
+				$( '.email_container' ).slideDown();
 			}
 		}
 
@@ -113,11 +120,11 @@
 			}
 		}
 
-		function getDataAsync( _action,_vid ) {
+		function getDataAsync( _action,_vid,_e ) {
 			$( '.loader_image' ).show();
 			$( '.submit_text' ).html( 'Fetching.....' );
 			$.ajax( {
-				url: './api/api_control.php?action='+_action+'&vid=' + _vid,
+				url: './api/api_control.php?action='+_action+'&vid=' + _vid+'&e='+_e,
 				async: false,
 				cache: false,
 				success: function ( data ) {
@@ -147,6 +154,15 @@
 			} );
 
 		}
+		
+		$(document).ready(function(){
+			if($('.type_selector').val() == "amazon"){
+				$( '.email_container' ).slideDown();
+			}
+			else{
+				$( '.email_container' ).slideUp();
+			}
+		});
 	</script>
 </body>
 
