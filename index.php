@@ -107,7 +107,7 @@
 		
 		function checkAmazonUrl( _url ) //checks if the url is valid and returns the video id
 		{
-			var regExp = /(?:dp|o|gp|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/;
+			var regExp = /(?:dp|product|o|gp|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/;
 			var match = _url.match( regExp );
 			if ( match ) {
 				if ( match.length >= 1 ) {
