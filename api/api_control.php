@@ -1,5 +1,5 @@
 <?php
-error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED );
+//error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED );
 include_once "../includes/simple_html_dom.php";
 
 if ( isset( $_GET[ 'action' ] ) ) {
@@ -143,17 +143,15 @@ function load_amazon_reviews() {
 				load_more_reviews( $product_id, $fd, 2 );
 			} else {
 				fclose( $fd );
+				//send downloaded file to the user
+				$protocol = $_SERVER['HTTPS'] == '' ? 'http://' : 'https://';
+				$folder = $protocol . $_SERVER['HTTP_HOST'];
+				$file_link_m = $folder."/generated/amazon/" . $csv_file;
+				sendMail($_GET['e'],$file_link_m);
+				$retunData = json_encode( array( "msg" => "success", "rurl" => "/generated/amazon/" . $csv_file ) );
+				//header('Content-Type:application/json;charset=utf-8');
+				echo $retunData;
 			}
-
-			//send downloaded file to the user
-			$protocol = $_SERVER['HTTPS'] == '' ? 'http://' : 'https://';
-			$folder = $protocol . $_SERVER['HTTP_HOST'];
-			$file_link_m = $folder."/generated/amazon/" . $csv_file;
-			sendMail($_GET['e'],$file_link_m);
-			
-			$retunData = json_encode( array( "msg" => "success", "rurl" => "/generated/amazon/" . $csv_file ) );
-			//header('Content-Type:application/json;charset=utf-8');
-			echo $retunData;
 		}
 		else{
 			$retunDatas = json_encode( array( "msg" => "failed", "rurl" => " " ) );
@@ -170,7 +168,7 @@ function load_amazon_reviews() {
 
 //loop through the other pages and load more reviews
 function load_more_reviews( $product_id, $fd, $_pageNum ) {
-	set_time_limit(300);
+	set_time_limit(120);
 	$pageNum = $_pageNum;
 
 	$product_id = $_GET[ 'vid' ]; //Product Id extracted from the link entered by the user
@@ -222,6 +220,14 @@ function load_more_reviews( $product_id, $fd, $_pageNum ) {
 			load_more_reviews( $product_id, $fd, $pageNum + 1 );
 		} else {
 			fclose( $fd );
+				//send downloaded file to the user
+				$protocol = $_SERVER['HTTPS'] == '' ? 'http://' : 'https://';
+				$folder = $protocol . $_SERVER['HTTP_HOST'];
+				$file_link_m = $folder."/generated/amazon/" . $csv_file;
+				sendMail($_GET['e'],$file_link_m);
+				$retunData = json_encode( array( "msg" => "success", "rurl" => "/generated/amazon/" . $csv_file ) );
+				//header('Content-Type:application/json;charset=utf-8');
+				echo $retunData;
 		}
 		}
 		else{
