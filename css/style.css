@@ -33,7 +33,7 @@ h2 {
 	text-align: center;
 	color: #888888 !important;
 }
-input#youtube_radio, input#amazon_radio {
+input#youtube_radio, input#amazon_radio, input#apple_radio, input#play_radio {
 	display: none;
 }
 label {

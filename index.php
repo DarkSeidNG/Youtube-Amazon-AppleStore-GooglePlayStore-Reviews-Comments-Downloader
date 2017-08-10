@@ -18,12 +18,18 @@
 		<div class="row">
 			<div class="Absolute-Center is-Responsive">
 				<div class="col-sm-12 col-md-10 col-md-offset-1">
-				<h2>Grab Youtube comments and Amazon Reviews with ease</h2>
+				<h2>Grab Product Comments and Reviews with ease</h2>
 					<form id="download_form" class="download_form">
 						<div class="form-group input-group">
 
 							<input class="form-control type_selector" type="radio" checked value="youtube" name="content_type" id="youtube_radio" onChange="radioListener(this)"/>
 							<label for='youtube_radio'><img height="28" src="images/icons/youtube.png"/>Youtube Comments</label>
+							
+							<input class="form-control type_selector" type="radio" checked value="apple" name="content_type" id="apple_radio" onChange="radioListener(this)"/>
+							<label for='apple_radio'><img height="28" src="images/icons/apple.png"/>Apple Store Reviews</label>
+							
+							<input class="form-control type_selector" type="radio" checked value="play" name="content_type" id="play_radio" onChange="radioListener(this)"/>
+							<label for='play_radio'><img height="28" src="images/icons/play.jpeg"/>Play Store Reviews</label>
 
 							<input class="form-control type_selector" type="radio" value="amazon" name="content_type" id="amazon_radio" onChange="radioListener(this)"/>
 							<label for='amazon_radio'><img height="28" src="images/icons/amazon.png"/>Amazon Reviews</label>
@@ -65,13 +71,37 @@
 				} else {
 					alert( 'The url you entered is invalid' );
 				}
-			} else if ( $( "input[type='radio'][name='content_type']:checked" ).val() == 'amazon' ) 
+			} 
+			else if ( $( "input[type='radio'][name='content_type']:checked" ).val() == 'amazon' ) 
 			{
 				var urlCheck = checkAmazonUrl( $( '.url_input' ).val() );
 				if ( urlCheck != "error" ) //check if the url is a valid amazon url and extrack the product id from the url
 				{
 					var _mail = $('.email_input').val();
 					getDataAsync("loadAmazon",urlCheck,_mail );
+				} else {
+					alert( 'The url you entered is invalid' );
+				}
+			}
+			else if ( $( "input[type='radio'][name='content_type']:checked" ).val() == 'apple' ) 
+			{
+				var urlCheck = checkAppleUrl( $( '.url_input' ).val() );
+				if ( urlCheck != "error" ) //check if the url is a valid amazon url and extrack the product id from the url
+				{
+					//alert(urlCheck);
+					getDataAsync("loadApple",urlCheck,"" );
+					
+				} else {
+					alert( 'The url you entered is invalid' );
+				}
+			}
+			else if ( $( "input[type='radio'][name='content_type']:checked" ).val() == 'play' ) 
+			{
+				var urlCheck = $.urlParam('id', $('.url_input').val());
+				if ( urlCheck != null ) //check if the url is a valid play store url and extrack the product id from the url
+				{
+					getDataAsync("loadPlay",urlCheck,"" );
+					
 				} else {
 					alert( 'The url you entered is invalid' );
 				}
@@ -87,6 +117,10 @@
 			} else if ( $( _this ).val() == "amazon" ) {
 				$( '.url_input' ).attr( "placeholder", "Enter Product Url..." );
 				$( '.email_container' ).slideDown();
+			}
+			else{
+				$( '.url_input' ).attr( "placeholder", "Enter Product Url..." );
+				$( '.email_container' ).slideUp();
 			}
 		}
 
@@ -109,6 +143,22 @@
 		{
 			var regExp = /(?:dp|product|o|gp|-)\/(B[0-9]{2}[0-9A-Z]{7}|[0-9]{9}(?:X|[0-9]))/;
 			var match = _url.match( regExp );
+			if ( match ) {
+				if ( match.length >= 1 ) {
+					return match[ 1 ];
+				} else {
+					return "error";
+				}
+			} else {
+				return "error";
+			}
+		}
+		
+		function checkAppleUrl( _url ) //checks if the url is valid and returns the video id
+		{
+			var regExp = /id(\d+)/;
+			var match = _url.match( regExp );
+			//console.log(match);
 			if ( match ) {
 				if ( match.length >= 1 ) {
 					return match[ 1 ];
@@ -154,6 +204,16 @@
 			} );
 
 		}
+		
+		$.urlParam = function(name,url){
+		 var results = new RegExp('[\?&]'+name+'=([^&#]*)').exec(url);
+		 if(results==null){
+			 return null;
+		 }
+		 else{
+			 return results[1]||0;
+		 }
+	 	}
 		
 		$(document).ready(function(){
 			if($('.type_selector').val() == "amazon"){
