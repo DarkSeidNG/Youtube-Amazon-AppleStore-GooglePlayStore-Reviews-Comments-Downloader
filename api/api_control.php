@@ -21,7 +21,7 @@ if ( isset( $_GET[ 'action' ] ) ) {
 function load_youtube_comments() {
 	$video_id = $_GET[ 'vid' ]; //Video Id extracted from the link entered by the user
 	if ( $video_id != null ) {
-		$json = @file_get_contents( 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=' . $video_id . '&maxResults=100&key=AIzaSyCyNu0JPbzN46UR1k-_JoRZx2yoLmNKrL4' );
+		$json = @file_get_contents( 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=' . $video_id . '&maxResults=100&key=YOUR_API_KEY' );
 
 		//check if the url returns data - if it doesnt its most probably because the videoID is wrong
 		if ( $json === false ) {
@@ -66,7 +66,7 @@ function load_youtube_comments() {
 //This function loads 100 more comments from the youtube link and runs in a loop till there is no nextPageToken rceived
 function load_more_comments( $dat, $fd, $v_id ) {
 	set_time_limit(120);
-	$json2 = @file_get_contents( 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=' . $v_id . '&maxResults=100&pageToken=' . $dat . '&key=AIzaSyCyNu0JPbzN46UR1k-_JoRZx2yoLmNKrL4' );
+	$json2 = @file_get_contents( 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=' . $v_id . '&maxResults=100&pageToken=' . $dat . '&key=YOUR_API_KEY' );
 
 	$datat2 = json_decode( $json2, true );
 	foreach ( $datat2[ 'items' ] as $item ) {
